@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0f172a">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingBottom="10dp"
+            android:text="RIVER CLEANER BOT"
+            android:textColor="#4fc3f7"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingBottom="8dp"
+            android:text="@string/status_initial"
+            android:textColor="#f87171"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnConnect"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="#2196F3"
+            android:text="@string/connect" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="6dp"
+            android:text="ДВИЖЕНИЕ"
+            android:textColor="#94a3b8"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnForward"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="6dp"
+            android:backgroundTint="#1e3a8a"
+            android:text="▲ НАПРЕД"
+            android:textColor="#dbeafe" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="6dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnLeft"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:backgroundTint="#1e3a8a"
+                android:text="◀ ЛЯВО"
+                android:textColor="#dbeafe" />
+
+            <Button
+                android:id="@+id/btnStop"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:backgroundTint="#991b1b"
+                android:text="СТОП"
+                android:textColor="#fee2e2" />
+
+            <Button
+                android:id="@+id/btnRight"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:backgroundTint="#1e3a8a"
+                android:text="ДЯСНО ▶"
+                android:textColor="#dbeafe" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="#1e3a8a"
+            android:text="▼ НАЗАД"
+            android:textColor="#dbeafe" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:text="СКОРОСТ"
+            android:textColor="#94a3b8"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <SeekBar
+            android:id="@+id/seekSpeed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:max="100"
+            android:progress="70" />
+
+        <TextView
+            android:id="@+id/txtSpeed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:text="@string/speed_initial"
+            android:textColor="#cbd5e1"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="6dp"
+            android:text="МЕХАНИЗМИ"
+            android:textColor="#94a3b8"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:orientation="horizontal">
+
+            <ToggleButton
+                android:id="@+id/btnBelt"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:backgroundTint="#166534"
+                android:textColor="#dcfce7"
+                android:textOff="ЛЕНТА OFF"
+                android:textOn="ЛЕНТА ON" />
+
+            <ToggleButton
+                android:id="@+id/btnShred"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:backgroundTint="#9a3412"
+                android:textColor="#ffedd5"
+                android:textOff="ШРЕДЕР OFF"
+                android:textOn="ШРЕДЕР ON" />
+
+            <ToggleButton
+                android:id="@+id/btnBucket"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:backgroundTint="#0f766e"
+                android:textColor="#ccfbf1"
+                android:textOff="КОФА OFF"
+                android:textOn="КОФА ON" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="6dp"
+            android:text="КОТВА"
+            android:textColor="#94a3b8"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnAnchorDn"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:backgroundTint="#475569"
+                android:text="КОТВА ↓"
+                android:textColor="#e2e8f0" />
+
+            <Button
+                android:id="@+id/btnAnchorUp"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:backgroundTint="#475569"
+                android:text="КОТВА ↑"
+                android:textColor="#e2e8f0" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">RiverROBOT3.0</string>
+    <string name="status_initial">Not connected</string>
+    <string name="connect">Connect HC-05</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="bluetooth_not_supported">Bluetooth is not supported on this device</string>
+    <string name="bluetooth_disabled">Turn on Bluetooth and try again</string>
+    <string name="bluetooth_permission_denied">Bluetooth permission is needed</string>
+    <string name="speed_initial">Speed: 70%</string>
+    <string name="speed_format">Speed: %d%%</string>
+    <string name="no_paired_devices">No paired Bluetooth devices</string>
+    <string name="choose_device">Choose Bluetooth device</string>
+    <string name="connecting_to">Connecting to %s...</string>
+    <string name="connected">Connected</string>
+    <string name="connection_error_with_message">Connection error: %s</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="not_connected">Not connected</string>
+    <string name="sent_command">Sent: %1$c</string>
+    <string name="sent_speed">Sent speed: %1$d%%</string>
+    <string name="send_error_with_message">Send error: %s</string>
+</resources>
