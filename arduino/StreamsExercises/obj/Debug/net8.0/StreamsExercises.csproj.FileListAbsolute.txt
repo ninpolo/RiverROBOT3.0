@@ -1,0 +1,14 @@
+C:\Users\Fujitsu4\Documents\Arduino\sketch_may8b\StreamsExercises\bin\Debug\net8.0\StreamsExercises.exe
+C:\Users\Fujitsu4\Documents\Arduino\sketch_may8b\StreamsExercises\bin\Debug\net8.0\StreamsExercises.deps.json
+C:\Users\Fujitsu4\Documents\Arduino\sketch_may8b\StreamsExercises\bin\Debug\net8.0\StreamsExercises.runtimeconfig.json
+C:\Users\Fujitsu4\Documents\Arduino\sketch_may8b\StreamsExercises\bin\Debug\net8.0\StreamsExercises.dll
+C:\Users\Fujitsu4\Documents\Arduino\sketch_may8b\StreamsExercises\bin\Debug\net8.0\StreamsExercises.pdb
+C:\Users\Fujitsu4\Documents\Arduino\sketch_may8b\StreamsExercises\obj\Debug\net8.0\StreamsExercises.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Fujitsu4\Documents\Arduino\sketch_may8b\StreamsExercises\obj\Debug\net8.0\StreamsExercises.AssemblyInfoInputs.cache
+C:\Users\Fujitsu4\Documents\Arduino\sketch_may8b\StreamsExercises\obj\Debug\net8.0\StreamsExercises.AssemblyInfo.cs
+C:\Users\Fujitsu4\Documents\Arduino\sketch_may8b\StreamsExercises\obj\Debug\net8.0\StreamsExercises.csproj.CoreCompileInputs.cache
+C:\Users\Fujitsu4\Documents\Arduino\sketch_may8b\StreamsExercises\obj\Debug\net8.0\StreamsExercises.dll
+C:\Users\Fujitsu4\Documents\Arduino\sketch_may8b\StreamsExercises\obj\Debug\net8.0\refint\StreamsExercises.dll
+C:\Users\Fujitsu4\Documents\Arduino\sketch_may8b\StreamsExercises\obj\Debug\net8.0\StreamsExercises.pdb
+C:\Users\Fujitsu4\Documents\Arduino\sketch_may8b\StreamsExercises\obj\Debug\net8.0\StreamsExercises.genruntimeconfig.cache
+C:\Users\Fujitsu4\Documents\Arduino\sketch_may8b\StreamsExercises\obj\Debug\net8.0\ref\StreamsExercises.dll
