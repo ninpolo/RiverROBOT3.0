@@ -6,13 +6,15 @@
     B = backward
     L = turn left
     R = turn right
+    G = forward-left   I = forward-right
+    J = backward-left  N = backward-right
     S = stop motors
     C = belt ON      c = belt OFF
     H = shredder ON  h = shredder OFF
     K = bucket ON    k = bucket OFF
     A = anchor down
     U = anchor up
-    V + byte 0..100 = speed percent
+    V + ASCII speed digits + newline = speed percent (for example V70\n)
 
   Bluetooth wiring for Arduino Mega Serial1:
     Bluetooth TXD -> Mega RX1 pin 19
@@ -47,6 +49,9 @@ const byte ANCHOR_UP_PIN = A1;
 byte speedPercent = 70;
 unsigned long lastMoveCommandAt = 0;
 unsigned long anchorStopAt = 0;
+char currentMovement = 'S';
+bool readingSpeedValue = false;
+String speedBuffer = "";
 
 void setup() {
   pinMode(LEFT_EN_PIN, OUTPUT);
@@ -82,15 +87,50 @@ void loop() {
 
 void readBluetoothCommands() {
   while (Serial1.available() > 0) {
-    char command = Serial1.read();
-    handleCommand(command);
+    processIncomingByte(Serial1.read());
   }
 }
 
 void readUsbSerialCommands() {
   while (Serial.available() > 0) {
-    char command = Serial.read();
-    handleCommand(command);
+    processIncomingByte(Serial.read());
+  }
+}
+
+void processIncomingByte(char incoming) {
+  if (readingSpeedValue) {
+    if (incoming >= '0' && incoming <= '9') {
+      if (speedBuffer.length() < 3) {
+        speedBuffer += incoming;
+      }
+      return;
+    }
+
+    if (incoming == '\r') {
+      return;
+    }
+
+    if (incoming == '\n') {
+      if (speedBuffer.length() > 0) {
+        setSpeed(speedBuffer.toInt());
+      }
+      speedBuffer = "";
+      readingSpeedValue = false;
+      return;
+    }
+
+    if (speedBuffer.length() > 0) {
+      setSpeed(speedBuffer.toInt());
+    }
+    speedBuffer = "";
+    readingSpeedValue = false;
+  }
+
+  if (incoming == 'V') {
+    speedBuffer = "";
+    readingSpeedValue = true;
+  } else {
+    handleCommand(incoming);
   }
 }
 
@@ -110,6 +150,18 @@ void handleCommand(char command) {
       break;
     case 'R':
       turnRight();
+      break;
+    case 'G':
+      moveForwardLeft();
+      break;
+    case 'I':
+      moveForwardRight();
+      break;
+    case 'J':
+      moveBackwardLeft();
+      break;
+    case 'N':
+      moveBackwardRight();
       break;
     case 'S':
       stopMotors();
@@ -138,25 +190,9 @@ void handleCommand(char command) {
     case 'U':
       anchorUp();
       break;
-    case 'V':
-      readSpeedValue();
-      break;
     default:
       break;
   }
-}
-
-void readSpeedValue() {
-  unsigned long startedAt = millis();
-
-  while (Serial1.available() == 0 && Serial.available() == 0) {
-    if (millis() - startedAt > 100) {
-      return;
-    }
-  }
-
-  int value = Serial1.available() > 0 ? Serial1.read() : Serial.read();
-  setSpeed(value);
 }
 
 void setSpeed(int value) {
@@ -165,33 +201,69 @@ void setSpeed(int value) {
   Serial.print("Speed: ");
   Serial.print(speedPercent);
   Serial.println("%");
+
+  applyCurrentMovementSpeed();
 }
 
 void moveForward() {
+  currentMovement = 'F';
   setLeftMotor(true, motorPwm());
   setRightMotor(true, motorPwm());
   lastMoveCommandAt = millis();
 }
 
 void moveBackward() {
+  currentMovement = 'B';
   setLeftMotor(false, motorPwm());
   setRightMotor(false, motorPwm());
   lastMoveCommandAt = millis();
 }
 
 void turnLeft() {
+  currentMovement = 'L';
   setLeftMotor(false, motorPwm());
   setRightMotor(true, motorPwm());
   lastMoveCommandAt = millis();
 }
 
 void turnRight() {
+  currentMovement = 'R';
   setLeftMotor(true, motorPwm());
   setRightMotor(false, motorPwm());
   lastMoveCommandAt = millis();
 }
 
+void moveForwardLeft() {
+  currentMovement = 'G';
+  setLeftMotor(true, motorPwm() / 2);
+  setRightMotor(true, motorPwm());
+  lastMoveCommandAt = millis();
+}
+
+void moveForwardRight() {
+  currentMovement = 'I';
+  setLeftMotor(true, motorPwm());
+  setRightMotor(true, motorPwm() / 2);
+  lastMoveCommandAt = millis();
+}
+
+void moveBackwardLeft() {
+  currentMovement = 'J';
+  setLeftMotor(false, motorPwm() / 2);
+  setRightMotor(false, motorPwm());
+  lastMoveCommandAt = millis();
+}
+
+void moveBackwardRight() {
+  currentMovement = 'N';
+  setLeftMotor(false, motorPwm());
+  setRightMotor(false, motorPwm() / 2);
+  lastMoveCommandAt = millis();
+}
+
 void stopMotors() {
+  currentMovement = 'S';
+  lastMoveCommandAt = 0;
   analogWrite(LEFT_EN_PIN, 0);
   analogWrite(RIGHT_EN_PIN, 0);
   digitalWrite(LEFT_IN1_PIN, LOW);
@@ -214,6 +286,20 @@ void setRightMotor(bool forward, byte pwm) {
 
 byte motorPwm() {
   return map(speedPercent, 0, 100, 0, 255);
+}
+
+void applyCurrentMovementSpeed() {
+  switch (currentMovement) {
+    case 'F': moveForward(); break;
+    case 'B': moveBackward(); break;
+    case 'L': turnLeft(); break;
+    case 'R': turnRight(); break;
+    case 'G': moveForwardLeft(); break;
+    case 'I': moveForwardRight(); break;
+    case 'J': moveBackwardLeft(); break;
+    case 'N': moveBackwardRight(); break;
+    default: break;
+  }
 }
 
 void stopMotorsIfCommandLost() {

@@ -6,11 +6,12 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothSocket
+import android.content.res.ColorStateList
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.view.MotionEvent
-import android.view.View
+import android.os.Handler
+import android.os.Looper
 import android.widget.Button
 import android.widget.SeekBar
 import android.widget.TextView
@@ -30,14 +31,21 @@ class MainActivity : AppCompatActivity() {
     private var btSocket: BluetoothSocket? = null
     private var outStream: OutputStream? = null
     private var isConnected = false
+    private var activeMovement = 'S'
+    private val movementHandler = Handler(Looper.getMainLooper())
+    private val movementHeartbeat = object : Runnable {
+        override fun run() {
+            if (activeMovement != 'S' && isConnected) {
+                send(activeMovement, updateStatus = false)
+                movementHandler.postDelayed(this, MOVEMENT_HEARTBEAT_MS)
+            }
+        }
+    }
 
     private lateinit var btnConnect: Button
     private lateinit var txtStatus: TextView
-    private lateinit var btnForward: Button
-    private lateinit var btnBack: Button
-    private lateinit var btnLeft: Button
-    private lateinit var btnRight: Button
     private lateinit var btnStop: Button
+    private lateinit var joystick: JoystickView
     private lateinit var btnBelt: ToggleButton
     private lateinit var btnShred: ToggleButton
     private lateinit var btnBucket: ToggleButton
@@ -55,11 +63,8 @@ class MainActivity : AppCompatActivity() {
 
         btnConnect = findViewById(R.id.btnConnect)
         txtStatus = findViewById(R.id.txtStatus)
-        btnForward = findViewById(R.id.btnForward)
-        btnBack = findViewById(R.id.btnBack)
-        btnLeft = findViewById(R.id.btnLeft)
-        btnRight = findViewById(R.id.btnRight)
         btnStop = findViewById(R.id.btnStop)
+        joystick = findViewById(R.id.joystick)
         btnBelt = findViewById(R.id.btnBelt)
         btnShred = findViewById(R.id.btnShred)
         btnBucket = findViewById(R.id.btnBucket)
@@ -82,11 +87,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        btnForward.setOnTouchListener(holdListener('F'))
-        btnBack.setOnTouchListener(holdListener('B'))
-        btnLeft.setOnTouchListener(holdListener('L'))
-        btnRight.setOnTouchListener(holdListener('R'))
-        btnStop.setOnClickListener { send('S') }
+        joystick.onCommandChanged = ::setMovementCommand
+        btnStop.setOnClickListener {
+            joystick.resetStick()
+            setMovementCommand('S')
+        }
 
         btnBelt.setOnCheckedChangeListener { _, on -> send(if (on) 'C' else 'c') }
         btnShred.setOnCheckedChangeListener { _, on -> send(if (on) 'H' else 'h') }
@@ -175,7 +180,7 @@ class MainActivity : AppCompatActivity() {
                     txtStatus.text = getString(R.string.connected)
                     txtStatus.setTextColor(COLOR_OK)
                     btnConnect.text = getString(R.string.disconnect)
-                    btnConnect.setBackgroundColor(COLOR_OK)
+                    btnConnect.backgroundTintList = ColorStateList.valueOf(COLOR_OK)
                     btnConnect.isEnabled = true
                 }
             } catch (error: IOException) {
@@ -215,24 +220,26 @@ class MainActivity : AppCompatActivity() {
 
         runOnUiThread {
             btnConnect.text = getString(R.string.connect)
-            btnConnect.setBackgroundColor(COLOR_CONNECT)
+            btnConnect.backgroundTintList = ColorStateList.valueOf(COLOR_CONNECT)
             btnConnect.isEnabled = true
             txtStatus.text = getString(R.string.disconnected)
             txtStatus.setTextColor(COLOR_ERROR)
         }
     }
 
-    private fun send(cmd: Char) {
+    private fun send(cmd: Char, updateStatus: Boolean = true) {
         if (!isConnected || outStream == null) {
-            txtStatus.text = getString(R.string.not_connected)
-            Toast.makeText(this, "Not connected", Toast.LENGTH_SHORT).show()
+            if (updateStatus) {
+                txtStatus.text = getString(R.string.not_connected)
+                Toast.makeText(this, "Not connected", Toast.LENGTH_SHORT).show()
+            }
             return
         }
 
         try {
             outStream?.write(cmd.code)
             outStream?.flush()
-            txtStatus.text = getString(R.string.sent_command, cmd)
+            if (updateStatus) txtStatus.text = getString(R.string.sent_command, cmd)
         } catch (error: IOException) {
             txtStatus.text = getString(R.string.send_error_with_message, error.message ?: "")
             disconnectBluetooth()
@@ -247,7 +254,7 @@ class MainActivity : AppCompatActivity() {
 
         val safeSpeed = speed.coerceIn(0, 100)
         try {
-            outStream?.write(byteArrayOf('V'.code.toByte(), safeSpeed.toByte()))
+            outStream?.write("V$safeSpeed\n".toByteArray(Charsets.US_ASCII))
             outStream?.flush()
             txtStatus.text = getString(R.string.sent_speed, safeSpeed)
         } catch (error: IOException) {
@@ -256,25 +263,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private fun holdListener(cmdDown: Char): View.OnTouchListener {
-        return View.OnTouchListener { view, event ->
-            when (event.actionMasked) {
-                MotionEvent.ACTION_DOWN -> {
-                    send(cmdDown)
-                    view.isPressed = true
-                    true
-                }
-
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    send('S')
-                    view.isPressed = false
-                    view.performClick()
-                    true
-                }
-
-                else -> false
-            }
+    private fun setMovementCommand(command: Char) {
+        activeMovement = command
+        movementHandler.removeCallbacks(movementHeartbeat)
+        send(command)
+        if (command != 'S') {
+            movementHandler.postDelayed(movementHeartbeat, MOVEMENT_HEARTBEAT_MS)
         }
     }
 
@@ -308,6 +302,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        activeMovement = 'S'
+        movementHandler.removeCallbacks(movementHeartbeat)
         disconnectBluetooth()
         super.onDestroy()
     }
@@ -321,6 +317,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val REQUEST_BLUETOOTH_CONNECT = 1001
+        private const val MOVEMENT_HEARTBEAT_MS = 350L
         private const val COLOR_CONNECT = 0xFF2196F3.toInt()
         private const val COLOR_OK = 0xFF4CAF50.toInt()
         private const val COLOR_ERROR = 0xFFF87171.toInt()
